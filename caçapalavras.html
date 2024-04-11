@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caça-Palavras</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+  }
+
+  .puzzle {
+    display: inline-block;
+    margin: 20px;
+    border: 1px solid #ccc;
+    padding: 10px;
+  }
+
+  table {
+    border-collapse: collapse;
+    margin-bottom: 10px;
+  }
+
+  td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+    width: 30px;
+    height: 30px;
+  }
+
+  .word {
+    display: inline-block;
+    margin-right: 10px;
+    margin-bottom: 5px;
+    background-color: #ffc;
+    padding: 5px;
+  }
+
+  .found {
+    background-color: lightgreen;
+  }
+</style>
+</head>
+<body>
+
+<div class="puzzle">
+  <h2>Caça-Palavras</h2>
+  <table>
+    <tr>
+      <td>R</td>
+      <td>A</td>
+      <td>T</td>
+      <td>R</td>
+      <td>A</td>
+      <td>T</td>
+      <td>A</td>
+      <td>T</td>
+      <td>A</td>
+      <td>R</td>
+    </tr>
+    <tr>
+      <td>E</td>
+      <td>V</td>
+      <td>I</td>
+      <td>T</td>
+      <td>A</td>
+      <td>L</td>
+      <td>I</td>
+      <td>S</td>
+      <td>T</td>
+      <td>U</td>
+    </tr>
+    <tr>
+      <td>S</td>
+      <td>E</td>
+      <td>G</td>
+      <td>U</td>
+      <td>R</td>
+      <td>A</td>
+      <td>U</td>
+      <td>T</td>
+      <td>A</td>
+      <td>M</td>
+    </tr>
+    <tr>
+      <td>S</td>
+      <td>P</td>
+      <td>A</td>
+      <td>G</td>
+      <td>H</td>
+      <td>E</td>
+      <td>I</td>
+      <td>T</td>
+      <td>I</td>
+      <td>A</td>
+    </tr>
+    <tr>
+      <td>T</td>
+      <td>R</td>
+      <td>A</td>
+      <td>N</td>
+      <td>S</td>
+      <td>P</td>
+      <td>O</td>
+      <td>R</td>
+      <td>T</td>
+      <td>A</td>
+    </tr>
+    <tr>
+      <td>A</td>
+      <td>E</td>
+      <td>L</td>
+      <td>I</td>
+      <td>T</td>
+      <td>E</td>
+      <td>R</td>
+      <td>E</td>
+      <td>S</td>
+      <td>A</td>
+    </tr>
+    <tr>
+      <td>L</td>
+      <td>A</td>
+      <td>N</td>
+      <td>T</td>
+      <td>E</td>
+      <td>R</td>
+      <td>N</td>
+      <td>O</td>
+      <td>A</td>
+      <td>L</td>
+    </tr>
+    <tr>
+      <td>A</td>
+      <td>N</td>
+      <td>A</td>
+      <td>L</td>
+      <td>E</td>
+      <td>R</td>
+      <td>T</td>
+      <td>O</td>
+      <td>P</td>
+      <td>A</td>
+    </tr>
+    <tr>
+      <td>L</td>
+      <td>E</td>
+      <td>G</td>
+      <td>A</td>
+      <td>L</td>
+      <td>I</td>
+      <td>T</td>
+      <td>O</td>
+      <td>S</td>
+      <td>A</td>
+    </tr>
+    <tr>
+      <td>L</td>
+      <td>O</td>
+      <td>V</td>
+      <td>E</td>
+      <td>A</td>
+      <td>M</td>
+      <td>O</td>
+      <td>R</td>
+      <td>O</td>
+      <td>T</td>
+    </tr>
+  </table>
+  <div class="words">
+    <input type="text" id="wordInput" placeholder="Digite uma palavra...">
+    <button onclick="checkWord()">Verificar</button>
+    <div id="message"></div>
+  </div>
+</div>
+
+<script>
+  function checkWord() {
+    const input = document.getElementById('wordInput');
+    const word = input.value.trim().toUpperCase();
+    const cells = document.getElementsByTagName('td');
+
+    for (let cell of cells) {
+      cell.classList.remove('found');
+    }
+
+    if (word === '') {
+      showMessage('Por favor, insira uma palavra.');
+      return;
+    }
+
+    const found = findWord(word);
+
+    if (found) {
+      showMessage(`Palavra "${word}" encontrada!`);
+    } else {
+      showMessage(`Palavra "${word}" não encontrada.`);
+    }
+
+    input.value = '';
+  }
+
+  function showMessage(message) {
+    const messageElement = document.getElementById('message');
+    messageElement.textContent = message;
+  }
+
+  function findWord(word) {
+    const table = document.getElementsByTagName('table')[0];
+    const rows = table.getElementsByTagName('tr');
+    const cols = rows[0].getElementsByTagName('td').length;
+    const directions = [
+      [-1, 0],  // para cima
+      [-1, 1],  // para cima-direita
+      [-1, -1], // para cima-esquerda
+      [0, 1],   // para direita
+      [0, -1],  // para esquerda
+      [1, 0],   // para baixo
+      [1, 1],   // para baixo-direita
+      [1, -1]   // para baixo-esquerda
+    ];
+
+    for (let i = 0; i < rows.length; i++) {
+      for (let j = 0; j < cols; j++) {
+        if (checkCell(i, j, word)) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  function checkCell(row, col, word) {
+    const table = document.getElementsByTagName('table')[0];
+    const rows = table.getElementsByTagName('tr');
+    const cols = rows[0].getElementsByTagName('td').length;
+    const directions = [
+      [-1, 0],  // para cima
+      [-1, 1],  // para cima-direita
+      [-1, -1], // para cima-esquerda
+      [0, 1],   // para direita
+      [0, -1],  // para esquerda
+      [1, 0],   // para baixo
+      [1, 1],   // para baixo-direita
+      [1, -1]   // para baixo-esquerda
+    ];
+
+    for (let dir of directions) {
+      let [dx, dy] = dir;
+      let found = true;
+      let currentRow = row;
+      let currentCol = col;
+
+      for (let char of word) {
+        if (currentRow < 0 || currentRow >= rows.length || currentCol < 0 || currentCol >= cols || rows[currentRow].getElementsByTagName('td')[currentCol].textContent !== char) {
+          found = false;
+          break;
+        }
+
+        currentRow += dx;
+        currentCol += dy;
+      }
+
+      if (found) {
+        highlightWord(word, row, col, dx, dy);
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  function highlightWord(word, startRow, startCol, dx, dy) {
+    const table = document.getElementsByTagName('table')[0];
+    const rows = table.getElementsByTagName('tr');
+    const cols = rows[0].getElementsByTagName('td').length;
+
+    let currentRow = startRow;
+    let currentCol = startCol;
+
+    for (let char of word) {
+      const cell = rows[currentRow].getElementsByTagName('td')[currentCol];
+      cell.classList.add('found');
+      currentRow += dx;
+      currentCol += dy;
+    }
+  }
+</script>
+
+</body>
+</html>
